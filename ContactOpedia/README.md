@@ -91,6 +91,7 @@ src/
   data/         initialContacts.js  - seed data for first load
   hooks/        useContacts.js      - state, validation, localStorage persistence
   state/        contactsReducer.js  - pure reducer; validateContact.js - validation rules
+  styles/       main.scss           - imports only the Bootstrap modules we use
   test/         setup.js            - Vitest + Testing Library setup
   App.jsx       page layout
   main.jsx      mounts <App />

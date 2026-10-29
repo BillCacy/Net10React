@@ -1,3 +1,5 @@
+import { PencilSquare, StarFill, TrashFill } from "react-bootstrap-icons";
+
 export default function Contact({ contact, onToggleFavorite, onEdit, onDelete }) {
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(contact.name)}`;
 
@@ -23,7 +25,7 @@ export default function Contact({ contact, onToggleFavorite, onEdit, onDelete })
           aria-pressed={contact.isFavorite}
           className={`btn btn-sm m-1 ${contact.isFavorite ? "btn-warning" : "btn-outline-warning"}`}
         >
-          <i className="bi bi-star-fill" aria-hidden="true"></i>
+          <StarFill aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -31,7 +33,7 @@ export default function Contact({ contact, onToggleFavorite, onEdit, onDelete })
           aria-label={`Edit ${contact.name}`}
           className="btn btn-info btn-sm m-1"
         >
-          <i className="bi bi-pencil-square" aria-hidden="true"></i>
+          <PencilSquare aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -39,7 +41,7 @@ export default function Contact({ contact, onToggleFavorite, onEdit, onDelete })
           aria-label={`Delete ${contact.name}`}
           className="btn btn-danger btn-sm m-1"
         >
-          <i className="bi bi-trash-fill" aria-hidden="true"></i>
+          <TrashFill aria-hidden="true" />
         </button>
       </div>
     </li>

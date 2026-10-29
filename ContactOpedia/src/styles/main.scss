@@ -1,0 +1,25 @@
+// Only the Bootstrap modules this app uses. To use a new component (e.g.
+// cards, alerts), add its import below. Full list: node_modules/bootstrap/scss/bootstrap.scss
+
+// 1. Configuration (required, outputs no CSS)
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// 2. Base: CSS variables (incl. data-bs-theme="dark"), reset, typography
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+
+// 3. Layout and components
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/forms/form-control";
+@import "bootstrap/scss/buttons";
+
+// 4. Helpers (.visually-hidden) and utility classes (.d-flex, .p-2, ...)
+@import "bootstrap/scss/helpers";
+@import "bootstrap/scss/utilities/api";
