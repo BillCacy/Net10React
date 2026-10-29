@@ -1,88 +1,77 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import { contactsReducer } from "../state/contactsReducer";
+import {
+  isDuplicateContact,
+  normalizeContact,
+  validateContact,
+} from "../state/validateContact";
 
-export function useContacts(initial) {
-  const [contacts, dispatch] = useReducer(contactsReducer, initial);
+export const STORAGE_KEY = "contactopedia.contacts";
+
+function loadContacts(fallback) {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : fallback;
+  } catch {
+    // Storage blocked or data corrupted: start from the seed data
+    return fallback;
+  }
+}
+
+export function useContacts(initialContacts) {
+  // Third argument is a lazy initializer: it runs once, not on every render
+  const [contacts, dispatch] = useReducer(
+    contactsReducer,
+    initialContacts,
+    loadContacts,
+  );
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(contacts));
+    } catch {
+      // Saving is best effort; the app still works in memory
+    }
+  }, [contacts]);
+
+  function checkContact(contact) {
+    const error = validateContact(contact);
+    if (error) return error;
+    if (isDuplicateContact(contacts, contact)) return "Duplicate record.";
+    return null;
+  }
 
   function add(contact) {
-    const isDuplicate = contacts.some(
-      (x) => x.name === contact.name && x.phone === contact.phone,
-    );
+    const newContact = {
+      ...normalizeContact(contact),
+      // Generate the id here, not in the reducer, so the reducer stays pure
+      id: crypto.randomUUID(),
+      isFavorite: false,
+    };
 
-    if (isDuplicate) {
-      return { status: "error", msg: "Duplicate record." };
-    }
+    const error = checkContact(newContact);
+    if (error) return { status: "error", msg: error };
 
-    // Generate the id here, not in the reducer, so the reducer stays pure
-    dispatch({
-      type: "add",
-      contact: { ...contact, id: crypto.randomUUID(), isFavorite: false },
-    });
-
+    dispatch({ type: "add", contact: newContact });
     return { status: "success", msg: "Contact was added." };
   }
 
   function update(contact) {
-    dispatch({ type: "update", contact });
-    return { status: "success", msg: "Contact was updated." };
-  }
+    const changes = normalizeContact(contact);
 
-  function addRandomContact(randomContact) {
-    // random contact comes from api and will need transformed
-    dispatch({
-      type: "addRandomContact",
-      randomContact,
-      id: crypto.randomUUID(),
-      isFavorite: false,
-    });
-    return { status: "success", msg: "Contact was added." };
+    const error = checkContact(changes);
+    if (error) return { status: "error", msg: error };
+
+    dispatch({ type: "update", contact: changes });
+    return { status: "success", msg: "Contact was updated." };
   }
 
   return {
     contacts,
     add,
-    addRandomContact,
     update,
     remove: (id) => dispatch({ type: "remove", id }),
     toggleFavorite: (id) => dispatch({ type: "toggleFavorite", id }),
     clear: () => dispatch({ type: "clear" }),
   };
-}
-
-function contactsReducer(state, action) {
-  switch (action.type) {
-    case "add":
-      return [...state, action.contact];
-
-    case "addRandomContact": {
-      // Convert api user to contact
-      const { randomContact: user, id, isFavorite } = action;
-      const contact = {
-        id,
-        name: `${user.name.first} ${user.name.last}`,
-        email: user.email,
-        phone: user.phone,
-        isFavorite,
-      };
-      return [...state, contact];
-    }
-
-    case "update":
-      return state.map((c) =>
-        c.id === action.contact.id ? { ...c, ...action.contact } : c,
-      );
-
-    case "remove":
-      return state.filter((c) => c.id !== action.id);
-
-    case "toggleFavorite":
-      return state.map((c) =>
-        c.id === action.id ? { ...c, isFavorite: !c.isFavorite } : c,
-      );
-
-    case "clear":
-      return [];
-
-    default:
-      throw new Error(`Unknown action: ${action.type}`);
-  }
 }

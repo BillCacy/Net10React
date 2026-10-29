@@ -67,6 +67,49 @@ User data generator : [Random User Generator](https://randomuser.me/)
 }
 ```
 
-## API Calls with Axios
+## API Calls
 
-A promise-based HTTP client used in React to make network requests to APIs. It allows React applications to send and receive data from a backend server, database, or external service.
+Project uses fetch() which is supported by all major browsers.
+
+When it makes sense the following libraries wrap the functionality
+
+`ky` (about 4 KB) is a small wrapper around fetch that brings back axios's conveniences: error statuses, JSON parsing, timeouts and retries. It's a good middle ground if you get tired of writing that code yourself.
+
+`axios` is still a reasonable choice if you need request/response interceptors (for example, adding an auth token to every call) or upload progress events.
+
+`TanStack Query` is the bigger step up once an app loads data from several endpoints. It doesn't replace fetch; it sits on top of it. It handles loading and error states, caching, retries and refetching, which is the isLoading/error code AddRandomContact now does by hand.
+
+# Project Structure
+
+```
+src/
+  api/          randomUser.js       - fetch call + maps API user to our contact shape
+  assets/       static images imported by components
+  components/
+    contacts/   ContactIndex (page), AddContact (form), ContactList, Contact, AddRandomContact
+    layout/     Header, Footer
+  data/         initialContacts.js  - seed data for first load
+  hooks/        useContacts.js      - state, validation, localStorage persistence
+  state/        contactsReducer.js  - pure reducer; validateContact.js - validation rules
+  test/         setup.js            - Vitest + Testing Library setup
+  App.jsx       page layout
+  main.jsx      mounts <App />
+```
+
+Tests live next to the code they cover (`*.test.js` / `*.test.jsx`).
+
+## Scripts
+
+| Command              | What it does                  |
+| -------------------- | ----------------------------- |
+| `npm run dev`        | Start the dev server          |
+| `npm test`           | Run the tests once            |
+| `npm run test:watch` | Re-run tests on file changes  |
+| `npm run lint`       | Lint with ESLint              |
+| `npm run build`      | Production build into `dist/` |
+
+## Conventions
+
+- Props that receive callbacks are named `onX`; the functions that handle them are `handleX`.
+- The reducer stays pure: ids, validation and storage happen in `useContacts`.
+- React Compiler is enabled in `vite.config.js`, so there is no manual `useMemo`/`useCallback`.
