@@ -3,23 +3,22 @@ import LifeCycleDemo from "./LifeCycleDemo";
 
 function SampleDemo() {
   const [counter, setCounter] = useState(0);
-  const [showComponent, setShowComponent] = useState(0);
+  const [showComponent, setShowComponent] = useState(false);
+
   return (
-    <div style={{ padding: "1rem" }}>
+    <section className="stack">
       <h2>React Hooks</h2>
 
-      <button onClick={() => setShowComponent((o) => !o)}>
+      <button type="button" onClick={() => setShowComponent((o) => !o)}>
         {showComponent ? "Unmount Component" : "Mount Component"}
       </button>
       <p>Parent Counter : {counter}</p>
-      <button onClick={() => setCounter((o) => o + 1)}>
+      <button type="button" onClick={() => setCounter((o) => o + 1)}>
         Increment Parent Counter
       </button>
 
-      <br />
-      <br />
       {showComponent && <LifeCycleDemo parentCounter={counter} />}
-    </div>
+    </section>
   );
 }
 
